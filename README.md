@@ -43,7 +43,7 @@ The architecture includes:
 - **s3_bucket.tf**: Configuration for an S3 bucket with KMS encryption.
 - **user_data.sh**: User data script for EC2 instances to install and configure necessary software.
 
-## Setup Instructions
+## High Level Setup Instructions
 
 1. **Clone the repository**:
 
