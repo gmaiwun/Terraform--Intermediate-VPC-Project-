@@ -1,4 +1,5 @@
 # AWS Terraform Setup with NAT Gateway, VPC Endpoints, and SSM
+![Architecture diagram - Terraform VPC Project](/images/terraform-vpc-deployment.png)
 
 This repository contains Terraform configuration files to set up an AWS environment with a NAT Gateway, VPC endpoints, and AWS Systems Manager (SSM) for managing EC2 instances. The setup includes both public and private subnets for high availability, with instances in private subnets accessing the internet via a NAT Gateway.
 
@@ -42,7 +43,7 @@ The architecture includes:
 - **s3_bucket.tf**: Configuration for an S3 bucket with KMS encryption.
 - **user_data.sh**: User data script for EC2 instances to install and configure necessary software.
 
-## Setup Instructions
+## High Level Setup Instructions
 
 1. **Clone the repository**:
 
