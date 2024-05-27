@@ -1,8 +1,8 @@
 provider "aws" {
-  region = "us-east-1" # If you change region, make sure to update availability zone in other files as well to match
-  profile = "terraform-user" # Create your own profile here
+  region = var.region
+  profile = var.profile 
   assume_role {
-    role_arn = "" # Use own role ARN
+    role_arn = var.role_arn
   }
 }
 

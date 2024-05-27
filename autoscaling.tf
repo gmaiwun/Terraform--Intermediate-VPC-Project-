@@ -1,8 +1,8 @@
 resource "aws_launch_template" "public_lt" {
   name          = "public-lt"
-  image_id      = "ami-08d4ac5b634553e16"
-  instance_type = "t2.micro"
-  key_name      = "terraform_keys" #Use own keys
+  image_id      = var.ami
+  instance_type = var.instance_type
+  key_name      = var.ami_key 
   iam_instance_profile {
     name = aws_iam_instance_profile.ec2_instance_profile.name
   }
@@ -24,11 +24,18 @@ resource "aws_launch_template" "public_lt" {
               sudo systemctl enable amazon-ssm-agent
               EOF
   )
+
   tag_specifications {
     resource_type = "instance"
-    tags = {
-      Name = "public-instance"
-    }
+    tags = merge(
+      var.global_tags,
+      {
+        "Name" = "public-lt"
+        "resource_type"     = "instance",
+        "Instance_Category" = "Public",
+        "Creation Date"     = "${timestamp()}"
+      }
+    )
   }
 }
 
@@ -36,17 +43,102 @@ resource "aws_autoscaling_group" "public_asg" {
   desired_capacity     = 2
   max_size             = 2
   min_size             = 2
-  vpc_zone_identifier  = [aws_subnet.public_subnet_1.id, aws_subnet.public_subnet_2.id]
+  vpc_zone_identifier  = aws_subnet.public_subnet[*].id
   launch_template {
     id      = aws_launch_template.public_lt.id
     version = "$Latest"
   }
 
-  tag {
+tag {
     key                 = "Name"
-    value               = "public-asg-instance"
+    value               = "${format("%s-instance", aws_launch_template.public_lt.name)}"
     propagate_at_launch = true
   }
+
+  tag {
+    key                 = "resource_type"
+    value               = "instance"
+    propagate_at_launch = true
+  }
+
+  tag {
+    key                 = "Instance_Category"
+    value               = "auto-scaling"
+    propagate_at_launch = true
+  }
+
+  tag {
+    key                 = "cost-center"
+    value               = var.global_tags["cost-center"]
+    propagate_at_launch = true
+  }
+
+  tag {
+    key                 = "project"
+    value               = var.global_tags["project"]
+    propagate_at_launch = true
+  }
+
+  tag {
+    key                 = "Environment"
+    value               = var.global_tags["Environment"]
+    propagate_at_launch = true
+  }
+
+  tag {
+    key                 = "Owner"
+    value               = var.global_tags["Owner"]
+    propagate_at_launch = true
+  }
+
+  tag {
+    key                 = "Application"
+    value               = var.global_tags["Application"]
+    propagate_at_launch = true
+  }
+
+  tag {
+    key                 = "Compliance"
+    value               = var.global_tags["Compliance"]
+    propagate_at_launch = true
+  }
+
+  tag {
+    key                 = "Business Unit"
+    value               = var.global_tags["Business Unit"]
+    propagate_at_launch = true
+  }
+
+  tag {
+    key                 = "Service"
+    value               = var.global_tags["Service"]
+    propagate_at_launch = true
+  }
+
+  tag {
+    key                 = "Version"
+    value               = var.global_tags["Version"]
+    propagate_at_launch = true
+  }
+
+  tag {
+    key                 = "Lifecycle"
+    value               = var.global_tags["Lifecycle"]
+    propagate_at_launch = true
+  }
+
+  tag {
+    key                 = "Region"
+    value               = var.global_tags["Region"]
+    propagate_at_launch = true
+  }
+
+  tag {
+    key                 = "VPC"
+    value               = var.global_tags["VPC"]
+    propagate_at_launch = true
+  }
+
 
   health_check_type          = "EC2"
   health_check_grace_period  = 300

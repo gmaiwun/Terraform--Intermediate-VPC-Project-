@@ -4,7 +4,7 @@ resource "aws_lb" "public_lb" {
   internal = false
   load_balancer_type = "application"
   security_groups = [aws_security_group.public_sg.id]
-  subnets = [aws_subnet.public_subnet_1.id, aws_subnet.public_subnet_2.id]
+  subnets = aws_subnet.public_subnet[*].id
 
   tags = {
     Name = "public_lb"

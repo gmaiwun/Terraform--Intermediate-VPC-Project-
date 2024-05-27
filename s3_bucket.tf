@@ -1,13 +1,20 @@
 # Creation of the s3
 
 resource "aws_s3_bucket" "secure_bucket" {
-  bucket = "gmais-secure-bucket-alpha" #Use Own bucket name here
-  tags = {
-    Name = "secure-bucket"
-    Environment = "Production"
-    Source = "Terraform"
-  }
+  bucket = "gmais-bucket-${random_id.bucket_suffix.hex}" #Use Own bucket name here
+  tags = merge(
+    var.global_tags,
+    {
+      "Name"          = "gmais-bucket-${random_id.bucket_suffix.hex}",
+      "resource_type" = "s3-bucket",
+      "Creation Date" = "${timestamp()}"
+    }
+  )
   
+}
+
+resource "random_id" "bucket_suffix" {
+  byte_length = 4
 }
 
 # Encryption of the bucket
